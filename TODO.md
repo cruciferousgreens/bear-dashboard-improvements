@@ -1,0 +1,2 @@
+- Reorganize into multiple plugins
+- Clean up code
