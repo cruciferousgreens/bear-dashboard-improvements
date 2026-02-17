@@ -1,3 +1,5 @@
 - Reorganize into multiple plugins
 - Clean up code
 - Move stylesheets to be seperate .css
+- prettify styling
+- fix jumping around when clicking filters
