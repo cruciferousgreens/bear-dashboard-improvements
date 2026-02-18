@@ -1,0 +1,36 @@
+
+/* Pagination plugin */
+.pagination {
+  display: flex;
+  /*justify-content: center;*/
+  align-items: baseline;
+  gap: 1rem;
+  margin-block: 2rem 0;
+  /*text-align: center;*/
+  font-size: 0.95em;
+}
+.pagination a {
+  cursor: pointer;
+}
+.pagination #pageInfo {
+  opacity: 0.7;
+  white-space: nowrap;
+}
+.pagination a[disabled] {
+  opacity: 0.4;
+  pointer-events: none;
+}
+.pagination #prevPage::before {
+  content: "« ";
+}
+.pagination #nextPage::after {
+  content: " »";
+}
+.filterSwitcher a::before {
+    display: block;
+    content: attr(title);
+    font-weight: bold;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+}

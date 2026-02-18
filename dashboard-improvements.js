@@ -40,12 +40,12 @@
                 displayLink.href = '#';
                 displayLink.title = name;
                 // styles for now (pull out later)
-                    displayLink.style.cursor = 'pointer';
-                    displayLink.style.marginRight = '15px';
-                    displayLink.style.textTransform = 'uppercase';
-                    displayLink.style.fontSize = '0.8em';
-                    displayLink.style.color = '#777';
-                    displayLink.style.fontWeight = 'normal';
+                displayLink.style.cursor = 'pointer';
+                displayLink.style.marginRight = '15px';
+                displayLink.style.textTransform = 'uppercase';
+                displayLink.style.fontSize = '0.8em';
+                displayLink.style.color = '#777';
+                displayLink.style.fontWeight = 'normal';
                 //end styles
                 navContainer.appendChild(displayLink);
             }
