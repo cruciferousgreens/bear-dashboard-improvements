@@ -104,8 +104,8 @@ function filterPosts(status) {
         // Get the link text inside the <li> element
         const linkText = post.querySelector('li a')?.textContent.trim();
 
-        // Check if this post's link text is in the isStarred array
-        const isPostStarred = linkText && isStarred.includes(linkText);
+        // Check if this post's link text is in the starredTitles array
+        const isPostStarred = linkText && starredTitles.includes(linkText);
 
         if (status === 'all') {
             post.style.display = '';
