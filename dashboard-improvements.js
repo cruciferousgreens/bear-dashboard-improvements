@@ -45,7 +45,8 @@
                 displayLink.style.textTransform = 'uppercase';
                 displayLink.style.fontSize = '0.8em';
                 displayLink.style.color = '#777';
-                displayLink.style.fontWeight = 'normal';
+                if (name === 'ALL'){displayLink.style.fontWeight = 'bold';}
+                else{displayLink.style.fontWeight = 'normal';}
                 //end styles
                 navContainer.appendChild(displayLink);
             }
