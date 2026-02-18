@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (h1 && !headerRow.classList.contains('page-header-row')) {
         const wrapper = document.createElement('div');
         wrapper.className = 'page-header-row';
-        wrapper.style.cssText = 'display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 20px; margin-bottom: 20px;';
+        wrapper.style.cssText = 'display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 20px;';
         h1.parentNode.insertBefore(wrapper, h1);
         wrapper.appendChild(h1);
         headerRow = wrapper;
