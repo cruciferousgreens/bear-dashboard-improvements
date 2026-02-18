@@ -21,6 +21,7 @@
 
             // Create navigation container with fixed width
             const navContainer = document.createElement('div');
+            navContainer.className = 'navContainer';
             navContainer.style.margin = '10px 0';
             navContainer.style.width = '100%'; // Fixed width to prevent layout shifts
 
@@ -59,16 +60,17 @@
 
             function filterLink(name){
                 const displayLink = document.createElement('a');
-                if (name === "PUBLISHED"){
+                if (name === "PUBLISHED") {
                     displayLink.textContent = `PUBLISHED (${publishedCount})`;
-                }
-                if (name === "DRAFTS"){
+                } else if (name === "DRAFTS") {
                     displayLink.textContent = `DRAFTS (${draftCount})`;
+                } else {
+                    displayLink.textContent = name;
                 }
-                displayLink.textContent = name;
-                displayLink.className = 'filterSwitcher';
-                displayLink.href = 'filterSwitcher';
+                displayLink.className = 'filterSwitcher'; // So we can style with CSS seperately
+                displayLink.href = '#';
                 displayLink.title = name;
+                navContainer.appendChild(displayLink);
             }
             filterLink('PUBLISHED');
             filterLink('DRAFTS');
