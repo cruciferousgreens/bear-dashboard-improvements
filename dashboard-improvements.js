@@ -50,9 +50,15 @@
                 navContainer.appendChild(displayLink);
             }
 
+  
+            const starredTitles = ['Contact','Now','Gratitude']; // Starred pages array!
+            const isPage = document.querySelector('h1');
+            if(isPage.textContent==='Pages'){
+                filterLink('STARRED');
+            }
+            filterLink('ALL');
             filterLink('PUBLISHED');
             filterLink('DRAFTS');
-            filterLink('ALL');
 
             // Insert after search input (wait for search to be created)
             setTimeout(() => {
@@ -89,50 +95,31 @@
                 }
             });
 
-            /*allLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                filterPosts('all');
-                // Update link styles
-                allLink.style.fontWeight = 'bold';
-                publishedLink.style.fontWeight = 'normal';
-                draftsLink.style.fontWeight = 'normal';
-            });
-
-            publishedLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                filterPosts('published');
-                // Update link styles
-                allLink.style.fontWeight = 'normal';
-                publishedLink.style.fontWeight = 'bold';
-                draftsLink.style.fontWeight = 'normal';
-            });
-
-            draftsLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                filterPosts('draft');
-                // Update link styles
-                allLink.style.fontWeight = 'normal';
-                publishedLink.style.fontWeight = 'normal';
-                draftsLink.style.fontWeight = 'bold';
-            });*/
-
             // Function to filter posts by status
-            function filterPosts(status) {
-                allPosts.forEach(post => {
-                    const smallElement = post.querySelector('small');
-                    const isDraft = smallElement && smallElement.textContent.includes('not published');
+function filterPosts(status) {
+    allPosts.forEach(post => {
+        const smallElement = post.querySelector('small');
+        const isDraft = smallElement && smallElement.textContent.includes('not published');
 
-                    if (status === 'all') {
-                        post.style.display = '';
-                    } else if (status === 'published' && !isDraft) {
-                        post.style.display = '';
-                    } else if (status === 'draft' && isDraft) {
-                        post.style.display = '';
-                    } else {
-                        post.style.display = 'none';
-                    }
-                });
-            }
+        // Get the link text inside the <li> element
+        const linkText = post.querySelector('li a')?.textContent.trim();
+
+        // Check if this post's link text is in the isStarred array
+        const isPostStarred = linkText && isStarred.includes(linkText);
+
+        if (status === 'all') {
+            post.style.display = '';
+        } else if (status === 'published' && !isDraft) {
+            post.style.display = '';
+        } else if (status === 'draft' && isDraft) {
+            post.style.display = '';
+        } else if (status === 'starred' && isPostStarred) {
+            post.style.display = '';
+        } else {
+            post.style.display = 'none';
+        }
+    });
+}
         }
     });
 })();
