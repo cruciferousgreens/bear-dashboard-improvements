@@ -62,12 +62,7 @@
             filterLink('DRAFTS');
 
             // Insert after search input (wait for search to be created)
-            setTimeout(() => {
-                const searchInput = document.getElementById('searchInput');
-                if (searchInput) {
-                    searchInput.parentNode.insertBefore(navContainer, searchInput.nextSibling);
-                }
-            }, 100);
+
 
             // Add click event listeners
 
