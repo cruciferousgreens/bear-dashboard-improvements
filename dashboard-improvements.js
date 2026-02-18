@@ -82,7 +82,10 @@
                         filterPosts('published');
                     } else if (name.includes('DRAFTS')) {
                         filterPosts('draft');
-                    } else {
+                    } else if (name.includes('STARRED')) {
+                        filterPosts('starred');
+                    } 
+                    else {
                         filterPosts('all');
                     }
 
