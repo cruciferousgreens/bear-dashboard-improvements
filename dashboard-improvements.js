@@ -19,7 +19,7 @@
     if (h1 && !headerRow?.classList.contains('page-header-row')) {
         const wrapper = document.createElement('div');
         wrapper.className = 'page-header-row';
-        wrapper.style.cssText = 'display: flex; align-items: center; flex-wrap: nowrap; gap: 15px; margin-bottom: 15px; width: 100%;';
+        wrapper.style.cssText = 'display: flex; align-items: center; flex-wrap: nowrap; gap: 15px; width: 100%;';
 
         // Insert wrapper BEFORE the anchor (or h1), not inside it
         titleElement.parentNode.insertBefore(wrapper, titleElement);
