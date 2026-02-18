@@ -19,16 +19,14 @@
 
             const publishedCount = totalCount - draftCount;
 
-            // Create navigation container with fixed dimensions
+            // Create navigation container with fixed width
             const navContainer = document.createElement('div');
             navContainer.className = 'navContainer';
             navContainer.style.margin = '10px 0';
-            navContainer.style.width = '100%';
-            navContainer.style.height = '40px'; // Fixed height to prevent layout shifts
-            navContainer.style.display = 'flex';
-            navContainer.style.alignItems = 'center';
+            navContainer.style.width = '100%'; // Fixed width to prevent layout shifts
 
             // Create the navigation links
+
             function filterLink(name){
                 const displayLink = document.createElement('a');
                 if (name === "PUBLISHED") {
@@ -41,7 +39,7 @@
                 displayLink.className = 'filterSwitcher'; // So we can style with CSS seperately
                 displayLink.href = '#';
                 displayLink.title = name;
-                // styles for now (pull out later)
+  // styles for now (pull out later)
                 displayLink.style.cursor = 'pointer';
                 displayLink.style.marginRight = '15px';
                 displayLink.style.textTransform = 'uppercase';
@@ -54,7 +52,8 @@
                 navContainer.appendChild(displayLink);
             }
 
-            \n            const starredTitles = ['Contact','Now','Gratitude']; // Starred pages array!
+  
+            const starredTitles = ['Contact','Now','Gratitude']; // Starred pages array!
             if (window.location.pathname.endsWith('/pages/')) {
                 filterLink('STARRED');
             }
@@ -62,14 +61,16 @@
             filterLink('PUBLISHED');
             filterLink('DRAFTS');
 
-            // Insert after search input (without setTimeout delay)
- // Remove setTimeout - insert immediately
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.parentNode.insertBefore(navContainer, searchInput.nextSibling);
-            }
+            // Insert after search input (wait for search to be created)
+            setTimeout(() => {
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.parentNode.insertBefore(navContainer, searchInput.nextSibling);
+                }
+            }, 100);
 
             // Add click event listeners
+
             navContainer.addEventListener('click', function(e) {
                 // Check if the clicked element is a filter link
                 if (e.target.classList.contains('filterSwitcher')) {
@@ -99,30 +100,30 @@
             });
 
             // Function to filter posts by status
-            function filterPosts(status) {
-                allPosts.forEach(post => {
-                    const smallElement = post.querySelector('small');
-                    const isDraft = smallElement && smallElement.textContent.includes('not published');
+function filterPosts(status) {
+    allPosts.forEach(post => {
+        const smallElement = post.querySelector('small');
+        const isDraft = smallElement && smallElement.textContent.includes('not published');
 
-                    // Get the link text inside the <li> element
-                    const linkText = post.querySelector('li a')?.textContent.trim();
+        // Get the link text inside the <li> element
+        const linkText = post.querySelector('li a')?.textContent.trim();
 
-                    // Check if this post's link text is in the starredTitles array
-                    const isPostStarred = linkText && starredTitles.includes(linkText);
+        // Check if this post's link text is in the starredTitles array
+        const isPostStarred = linkText && starredTitles.includes(linkText);
 
-                    if (status === 'all') {
-                        post.style.display = '';
-                    } else if (status === 'published' && !isDraft) {
-                        post.style.display = '';
-                    } else if (status === 'draft' && isDraft) {
-                        post.style.display = '';
-                    } else if (status === 'starred' && isPostStarred) {
-                        post.style.display = '';
-                    } else {
-                        post.style.display = 'none';
-                    }
-                });
-            }
+        if (status === 'all') {
+            post.style.display = '';
+        } else if (status === 'published' && !isDraft) {
+            post.style.display = '';
+        } else if (status === 'draft' && isDraft) {
+            post.style.display = '';
+        } else if (status === 'starred' && isPostStarred) {
+            post.style.display = '';
+        } else {
+            post.style.display = 'none';
+        }
+    });
+}
         }
     });
 })();
@@ -191,10 +192,6 @@ function addSearch() {
         searchInput.id = 'searchInput';
         searchInput.placeholder = 'Search...';
         searchInput.style.display = 'block';
-        searchInput.style.width = '100%'; // Full width
-        searchInput.style.height = '44px'; // Fixed height to prevent layout shifts
-        searchInput.style.marginBottom = '10px'; // Space between search and filters
-        searchInput.style.boxSizing = 'border-box';
 
         // Insert the search input before the blog posts
         mainContainer.insertBefore(searchInput, blogPosts);
