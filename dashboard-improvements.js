@@ -9,6 +9,7 @@ function organizeBlogPosts() {
     if (!blogPostsList) return;
 
     const posts = Array.from(blogPostsList.querySelectorAll('li'));
+
     const postsByMonth = new Map();
 
     posts.forEach(post => {
@@ -44,7 +45,7 @@ function organizeBlogPosts() {
     });
 }
 
-// Add search to posts page
+// Add search to posts page with fixed dimensions
 function addSearch() {
     const blogPosts = document.querySelector('.post-list');
     if (!blogPosts) return;
@@ -54,9 +55,19 @@ function addSearch() {
     searchInput.type = 'text';
     searchInput.id = 'searchInput';
     searchInput.placeholder = 'Search...';
-    searchInput.style.display = 'block';
-    searchInput.style.width = '100%';
-    searchInput.style.boxSizing = 'border-box';
+
+    // Fixed width styling to prevent layout shifts
+    searchInput.style.cssText = `
+        display: block;
+        width: 100%;
+        max-width: 400px;
+        box-sizing: border-box;
+        margin: 0 0 10px 0;
+        padding: 8px 12px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    `;
 
     mainContainer.insertBefore(searchInput, blogPosts);
 
@@ -131,15 +142,14 @@ document.addEventListener('DOMContentLoaded', function() {
         publishedCount = totalCount - draftCount;
     }
 
-    // Add search and filters synchronously (no layout shift between them)
+    // 1. Add search first (appears immediately with fixed width)
     addSearch();
 
-    // Create and insert filter nav immediately (no 100ms timeout)
+    // 2. Add filter nav synchronously right after search (no setTimeout)
     if (postList) {
         const navContainer = document.createElement('div');
         navContainer.className = 'navContainer';
-        navContainer.style.margin = '10px 0';
-        navContainer.style.width = '100%';
+        navContainer.style.cssText = 'margin: 0 0 15px 0; width: 100%;';
 
         function filterLink(name) {
             const displayLink = document.createElement('a');
@@ -153,11 +163,14 @@ document.addEventListener('DOMContentLoaded', function() {
             displayLink.className = 'filterSwitcher';
             displayLink.href = '#';
             displayLink.title = name;
-            displayLink.style.cursor = 'pointer';
-            displayLink.style.marginRight = '15px';
-            displayLink.style.textTransform = 'uppercase';
-            displayLink.style.fontSize = '0.8em';
-            displayLink.style.color = '#777';
+            displayLink.style.cssText = `
+                cursor: pointer;
+                margin-right: 15px;
+                text-transform: uppercase;
+                font-size: 0.8em;
+                color: #777;
+                text-decoration: none;
+            `;
 
             if (name === 'ALL') {
                 displayLink.style.fontWeight = 'bold';
@@ -173,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
         filterLink('PUBLISHED');
         filterLink('DRAFTS');
 
-        // Insert immediately after search (no setTimeout)
+        // Insert immediately after search (synchronous - no delay)
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
             searchInput.parentNode.insertBefore(navContainer, searchInput.nextSibling);
@@ -210,124 +223,129 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Then organize by month and paginate
+    // 3. Organize posts by month (this clears and rebuilds the list)
     organizeBlogPosts();
+
+    // 4. Initialize pagination
     initPagination();
 });
 
-<!-- markdown hotkeys -->
+// Markdown hotkeys
 (() => {
-  const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform);
+    const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform);
 
-  const getTextarea = () =>
-    document.querySelector('textarea#body_content') ||
-    document.querySelector('textarea');
+    const getTextarea = () =>
+        document.querySelector('textarea#body_content') ||
+        document.querySelector('textarea');
 
-  const isFocused = (el) => el && document.activeElement === el;
+    const isFocused = (el) => el && document.activeElement === el;
 
-  const setSel = (el, start, end) => {
-    el.selectionStart = start;
-    el.selectionEnd = end;
-  };
+    const setSel = (el, start, end) => {
+        el.selectionStart = start;
+        el.selectionEnd = end;
+    };
 
-  const wrap = (el, w) => {
-    const v = el.value;
-    const s = el.selectionStart ?? 0;
-    const e = el.selectionEnd ?? 0;
+    const wrap = (el, w) => {
+        const v = el.value;
+        const s = el.selectionStart ?? 0;
+        const e = el.selectionEnd ?? 0;
 
-    if (s === e) {
-      const placeholder = w === "`" ? "code" : "text";
-      const ins = w + placeholder + w;
-      el.value = v.slice(0, s) + ins + v.slice(e);
-      setSel(el, s + w.length, s + w.length + placeholder.length);
-      return;
-    }
+        if (s === e) {
+            const placeholder = w === "`" ? "code" : "text";
+            const ins = w + placeholder + w;
+            el.value = v.slice(0, s) + ins + v.slice(e);
+            setSel(el, s + w.length, s + w.length + placeholder.length);
+            return;
+        }
 
-    const left = v.slice(Math.max(0, s - w.length), s);
-    const right = v.slice(e, e + w.length);
-    if (left === w && right === w) {
-      el.value = v.slice(0, s - w.length) + v.slice(s, e) + v.slice(e + w.length);
-      setSel(el, s - w.length, e - w.length);
-      return;
-    }
+        const left = v.slice(Math.max(0, s - w.length), s);
+        const right = v.slice(e, e + w.length);
+        if (left === w && right === w) {
+            el.value = v.slice(0, s - w.length) + v.slice(s, e) + v.slice(e + w.length);
+            setSel(el, s - w.length, e - w.length);
+            return;
+        }
 
-    const sel = v.slice(s, e);
-    if (sel.startsWith(w) && sel.endsWith(w) && sel.length >= w.length * 2) {
-      const un = sel.slice(w.length, sel.length - w.length);
-      el.value = v.slice(0, s) + un + v.slice(e);
-      setSel(el, s, s + un.length);
-      return;
-    }
+        const sel = v.slice(s, e);
+        if (sel.startsWith(w) && sel.endsWith(w) && sel.length >= w.length * 2) {
+            const un = sel.slice(w.length, sel.length - w.length);
+            el.value = v.slice(0, s) + un + v.slice(e);
+            setSel(el, s, s + un.length);
+            return;
+        }
 
-    el.value = v.slice(0, s) + w + sel + w + v.slice(e);
-    setSel(el, s + w.length, e + w.length);
-  };
+        el.value = v.slice(0, s) + w + sel + w + v.slice(e);
+        setSel(el, s + w.length, e + w.length);
+    };
 
-  const unwrapAny = (el) => {
-    const ws = ["**", "*", "`"];
-    const v = el.value;
-    let s = el.selectionStart ?? 0;
-    let e = el.selectionEnd ?? 0;
+    const unwrapAny = (el) => {
+        const ws = ["**", "*", "`"];
+        const v = el.value;
+        let s = el.selectionStart ?? 0;
+        let e = el.selectionEnd ?? 0;
 
-    if (s === e) {
-      let L = s;
-      while (L > 0 && !/\s/.test(v[L - 1])) L--;
-      let R = s;
-      while (R < v.length && !/\s/.test(v[R])) R++;
-      if (L === R) return;
-      s = L;
-      e = R;
-    }
+        if (s === e) {
+            let L = s;
+            while (L > 0 && !/\s/.test(v[L - 1])) L--;
+            let R = s;
+            while (R < v.length && !/\s/.test(v[R])) R++;
+            if (L === R) return;
+            s = L;
+            e = R;
+        }
 
-    for (const w of ws) {
-      const left = v.slice(Math.max(0, s - w.length), s);
-      const right = v.slice(e, e + w.length);
-      if (left === w && right === w) {
-        el.value = v.slice(0, s - w.length) + v.slice(s, e) + v.slice(e + w.length);
-        setSel(el, s - w.length, e - w.length);
-        return;
-      }
-    }
+        for (const w of ws) {
+            const left = v.slice(Math.max(0, s - w.length), s);
+            const right = v.slice(e, e + w.length);
+            if (left === w && right === w) {
+                el.value = v.slice(0, s - w.length) + v.slice(s, e) + v.slice(e + w.length);
+                setSel(el, s - w.length, e - w.length);
+                return;
+            }
+        }
 
-    const sel = v.slice(s, e);
-    for (const w of ws) {
-      if (sel.startsWith(w) && sel.endsWith(w) && sel.length >= w.length * 2) {
-        const un = sel.slice(w.length, sel.length - w.length);
-        el.value = v.slice(0, s) + un + v.slice(e);
-        setSel(el, s, s + un.length);
-        return;
-      }
-    }
-  };
+        const sel = v.slice(s, e);
+        for (const w of ws) {
+            if (sel.startsWith(w) && sel.endsWith(w) && sel.length >= w.length * 2) {
+                const un = sel.slice(w.length, sel.length - w.length);
+                el.value = v.slice(0, s) + un + v.slice(e);
+                setSel(el, s, s + un.length);
+                return;
+            }
+        }
+    };
 
-  document.addEventListener("keydown", (ev) => {
-    const ta = getTextarea();
-    if (!isFocused(ta)) return;
+    document.addEventListener("keydown", (ev) => {
+        const ta = getTextarea();
+        if (!isFocused(ta)) return;
 
-    const mod = isMac ? ev.metaKey : ev.ctrlKey;
-    if (!mod) return;
+        const mod = isMac ? ev.metaKey : ev.ctrlKey;
+        if (!mod) return;
 
-    const k = (ev.key || "").toLowerCase();
-    if (k === "b") { ev.preventDefault(); wrap(ta, "**"); }
-    else if (k === "i") { ev.preventDefault(); wrap(ta, "*"); }
-    else if (k === "k") { ev.preventDefault(); wrap(ta, "`"); }
-    else if (k === "u") { ev.preventDefault(); unwrapAny(ta); }
-  });
+        const k = (ev.key || "").toLowerCase();
+        if (k === "b") { ev.preventDefault(); wrap(ta, "**"); }
+        else if (k === "i") { ev.preventDefault(); wrap(ta, "*"); }
+        else if (k === "k") { ev.preventDefault(); wrap(ta, "`"); }
+        else if (k === "u") { ev.preventDefault(); unwrapAny(ta); }
+    });
 })();
 
-<!-- Autosave my blog drafts -->
+// Autosave blog drafts
 (() => {
+    const stickyControls = document.querySelector('.sticky-controls');
+    if (!stickyControls) return;
+
     const restore_btn = document.createElement('button');
     restore_btn.classList.add('rdb_post_restorer');
     restore_btn.setAttribute('onclick', "event.preventDefault();rdb_restore_post();");
     restore_btn.innerText = 'Restore Last Post';
-    document.querySelector('.sticky-controls')?.appendChild(restore_btn);
+    stickyControls.appendChild(restore_btn);
 
-    function rdb_restore_post(){
-        var ebody = document.getElementById('body_content');
-        var eheaders = document.getElementById('header_content');
+    function rdb_restore_post() {
+        const ebody = document.getElementById('body_content');
+        const eheaders = document.getElementById('header_content');
 
-        if (ebody && ebody.value.length > 30){
+        if (ebody && ebody.value.length > 30) {
             if (!confirm("Overwrite your current post with previous post?")) return;
         }
 
@@ -335,11 +353,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (eheaders) eheaders.innerText = localStorage.getItem('headers');
     }
 
-    function rdb_save_post(){
-        setTimeout(function(){rdb_save_post();}, 10000);
-        var body = document.getElementById('body_content')?.value;
-        var headers = document.getElementById('header_content')?.innerText;
-        if (!body || body.length < 50){
+    window.rdb_restore_post = rdb_restore_post;
+
+    function rdb_save_post() {
+        setTimeout(function() { rdb_save_post(); }, 10000);
+        const body = document.getElementById('body_content')?.value;
+        const headers = document.getElementById('header_content')?.innerText;
+        if (!body || body.length < 50) {
             console.log("Body less than 50 chars. Not saving.");
             return;
         }
@@ -348,5 +368,5 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("Post saved locally");
     }
 
-    setTimeout(function(){rdb_save_post();}, 10000);
+    setTimeout(function() { rdb_save_post(); }, 10000);
 })();
