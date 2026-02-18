@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Find or create header container for inline layout
     let headerRow = h1?.parentElement;
     if (h1 && !headerRow.classList.contains('page-header-row')) {
-        // Wrap h1 in a flex container if not already
         const wrapper = document.createElement('div');
         wrapper.className = 'page-header-row';
         wrapper.style.cssText = 'display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 20px; margin-bottom: 20px;';
@@ -14,6 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
         wrapper.appendChild(h1);
         headerRow = wrapper;
     }
+
+    const isPostsPage = window.location.pathname.endsWith('/posts/');
+    const isPagesPage = window.location.pathname.endsWith('/pages/');
 
     const starredTitles = ['Contact', 'Now', 'Gratitude'];
     const posts = Array.from(postList.querySelectorAll('li'));
@@ -36,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return a;
     };
 
-    if (window.location.pathname.endsWith('/pages/')) {
+    if (isPagesPage) {
         nav.appendChild(makeLink('Starred', 'starred'));
     }
     nav.appendChild(makeLink(`All (${posts.length})`, 'all', true));
@@ -56,7 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target.tagName !== 'A') return;
         e.preventDefault();
 
-        // Update active state
         nav.querySelectorAll('a').forEach(a => {
             a.style.fontWeight = 'normal';
             a.style.color = '#777';
@@ -81,10 +82,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Organize by month
-    organizeByMonth(posts, postList);
+    // Only organize by month on posts page
+    if (isPostsPage) {
+        organizeByMonth(posts, postList);
+    }
 
-    // Paginate
+    // Paginate (works for both)
     initPagination();
 });
 
