@@ -1,95 +1,114 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const postList = document.querySelector('ul.post-list');
-    const h1 = document.querySelector('h1');
-    if (!postList) return;
+// Skip entirely on mobile (phones/tablets)
+if (window.innerWidth <= 768) return;
 
-    // Find or create header container for inline layout
-    let headerRow = h1?.parentElement;
-    if (h1 && !headerRow.classList.contains('page-header-row')) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'page-header-row';
-        wrapper.style.cssText = 'display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 20px;';
-        h1.parentNode.insertBefore(wrapper, h1);
-        wrapper.appendChild(h1);
-        headerRow = wrapper;
-    }
+const postList = document.querySelector('ul.post-list');
+const h1 = document.querySelector('h1');
+if (!postList) return;
 
-    const isPostsPage = window.location.pathname.endsWith('/posts/');
-    const isPagesPage = window.location.pathname.endsWith('/pages/');
+// Create flex container for header row
+let headerRow = h1?.parentElement;
+if (h1 && !headerRow.classList.contains('page-header-row')) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'page-header-row';
+    // flex-wrap allows fallback on very narrow desktop windows
+    wrapper.style.cssText = 'display: flex; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 15px;';
+    h1.parentNode.insertBefore(wrapper, h1);
+    wrapper.appendChild(h1);
+    headerRow = wrapper;
+}
 
-    const starredTitles = ['Contact', 'Now', 'Gratitude'];
-    const posts = Array.from(postList.querySelectorAll('li'));
+const isPostsPage = window.location.pathname.endsWith('/posts/');
+const isPagesPage = window.location.pathname.endsWith('/pages/');
 
-    // Count drafts/published
-    const draftCount = posts.filter(p => p.querySelector('small')?.textContent.includes('not published')).length;
-    const publishedCount = posts.length - draftCount;
+const starredTitles = ['Contact', 'Now', 'Gratitude'];
+const posts = Array.from(postList.querySelectorAll('li'));
 
-    // Build filter nav (inline style)
-    const nav = document.createElement('div');
-    nav.className = 'filter-nav';
-    nav.style.cssText = 'font-size: 0.8em; text-transform: uppercase; display: flex; gap: 15px; flex-wrap: wrap;';
+// Count drafts/published
+const draftCount = posts.filter(p => p.querySelector('small')?.textContent.includes('not published')).length;
+const publishedCount = posts.length - draftCount;
 
-    const makeLink = (text, filter, bold = false) => {
-        const a = document.createElement('a');
-        a.href = '#';
-        a.textContent = text;
-        a.dataset.filter = filter;
-        a.style.cssText = `color: #777; text-decoration: none; cursor: pointer;${bold ? ' font-weight: bold; color: #333;' : ''}`;
-        return a;
-    };
+// Build filter nav
+const nav = document.createElement('div');
+nav.className = 'filter-nav';
+nav.style.cssText = 'font-size: 0.75em; text-transform: uppercase; display: flex; gap: 12px; flex-wrap: wrap;';
 
-    if (isPagesPage) {
-        nav.appendChild(makeLink('Starred', 'starred'));
-    }
-    nav.appendChild(makeLink(`All (${posts.length})`, 'all', true));
-    nav.appendChild(makeLink(`Published (${publishedCount})`, 'published'));
-    nav.appendChild(makeLink(`Drafts (${draftCount})`, 'drafts'));
+const makeLink = (text, filter, bold = false) => {
+    const a = document.createElement('a');
+    a.href = '#';
+    a.textContent = text;
+    a.dataset.filter = filter;
+    a.style.cssText = `color: #777; text-decoration: none; cursor: pointer; white-space: nowrap;${bold ? ' font-weight: bold; color: #333;' : ''}`;
+    return a;
+};
 
-    // Insert into header row (or before post list if no h1)
-    if (headerRow) {
-        headerRow.appendChild(nav);
-    } else {
-        postList.parentNode.insertBefore(nav, postList);
-        nav.style.marginBottom = '20px';
-    }
+if (isPagesPage) nav.appendChild(makeLink('Starred', 'starred'));
+nav.appendChild(makeLink(`All (${posts.length})`, 'all', true));
+nav.appendChild(makeLink(`Published (${publishedCount})`, 'published'));
+nav.appendChild(makeLink(`Drafts (${draftCount})`, 'drafts'));
 
-    // Filter handler
-    nav.addEventListener('click', (e) => {
-        if (e.target.tagName !== 'A') return;
-        e.preventDefault();
+// Create search input - RIGHT JUSTIFIED via margin-left: auto
+const search = document.createElement('input');
+search.type = 'text';
+search.id = 'searchInput';
+search.placeholder = 'Search...';
+search.style.cssText = 'margin-left: auto; width: 200px; max-width: 200px; padding: 4px 8px; font-size: 0.85em; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;';
 
-        nav.querySelectorAll('a').forEach(a => {
-            a.style.fontWeight = 'normal';
-            a.style.color = '#777';
-        });
-        e.target.style.fontWeight = 'bold';
-        e.target.style.color = '#333';
-
-        const filter = e.target.dataset.filter;
-
-        posts.forEach(post => {
-            const isDraft = post.querySelector('small')?.textContent.includes('not published');
-            const title = post.querySelector('a')?.textContent.trim();
-            const isStarred = starredTitles.includes(title);
-
-            const show = 
-                filter === 'drafts' ? isDraft :
-                filter === 'published' ? !isDraft :
-                filter === 'starred' ? isStarred :
-                true;
-
-            post.style.display = show ? '' : 'none';
-        });
+// Search handler
+search.addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    posts.forEach(post => {
+        const text = post.textContent.toLowerCase();
+        post.style.display = text.includes(term) ? '' : 'none';
     });
-
-    // Only organize by month on posts page
-    if (isPostsPage) {
-        organizeByMonth(posts, postList);
-    }
-
-    // Paginate (works for both)
-    initPagination();
 });
+
+// Insert into header row (filters middle, search right)
+if (headerRow) {
+    headerRow.appendChild(nav);
+    headerRow.appendChild(search);
+} else {
+    // Fallback if no h1: stack above list
+    const container = document.createElement('div');
+    container.style.cssText = 'margin-bottom: 15px;';
+    container.appendChild(nav);
+    container.appendChild(search);
+    search.style.marginLeft = '0'; // Remove auto-margin for stacked layout
+    search.style.marginTop = '10px';
+    postList.parentNode.insertBefore(container, postList);
+}
+
+// Filter click handler
+nav.addEventListener('click', (e) => {
+    if (e.target.tagName !== 'A') return;
+    e.preventDefault();
+
+    nav.querySelectorAll('a').forEach(a => {
+        a.style.fontWeight = 'normal';
+        a.style.color = '#777';
+    });
+    e.target.style.fontWeight = 'bold';
+    e.target.style.color = '#333';
+
+    const filter = e.target.dataset.filter;
+
+    posts.forEach(post => {
+        const isDraft = post.querySelector('small')?.textContent.includes('not published');
+        const title = post.querySelector('a')?.textContent.trim();
+        const isStarred = starredTitles.includes(title);
+
+        const show = 
+            filter === 'drafts' ? isDraft :
+            filter === 'published' ? !isDraft :
+            filter === 'starred' ? isStarred :
+            true;
+
+        post.style.display = show ? '' : 'none';
+    });
+});
+
+// Only organize by month on posts page
+if (isPostsPage) organizeByMonth(posts, postList);
+initPagination();
 
 function organizeByMonth(posts, list) {
     const byMonth = new Map();
