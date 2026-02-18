@@ -39,12 +39,7 @@
                 displayLink.className = 'filterSwitcher'; // So we can style with CSS seperately
                 displayLink.href = '#';
                 displayLink.title = name;
-                // styles for now (pull out later)
-                displayLink.style.cursor = 'pointer';
-                displayLink.style.marginRight = '15px';
-                displayLink.style.textTransform = 'uppercase';
-                displayLink.style.fontSize = '0.8em';
-                displayLink.style.color = '#777';
+
                 if (name === 'ALL'){displayLink.style.fontWeight = 'bold';}
                 else{displayLink.style.fontWeight = 'normal';}
                 //end styles
