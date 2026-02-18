@@ -8,12 +8,25 @@
 
     // Create flex container for header row
     let headerRow = h1?.parentElement;
-    if (h1 && !headerRow.classList.contains('page-header-row')) {
+    let titleElement = h1; // This is what we'll move into the flex container
+
+    // If h1 is inside a link (logo link), we need to work with the link instead
+    if (headerRow?.tagName === 'A') {
+        titleElement = headerRow; // Move the whole anchor, not just the h1
+        headerRow = headerRow.parentElement; // Work at the level above the anchor
+    }
+
+    if (h1 && !headerRow?.classList.contains('page-header-row')) {
         const wrapper = document.createElement('div');
         wrapper.className = 'page-header-row';
-        wrapper.style.cssText = 'display: flex; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 15px;';
-        h1.parentNode.insertBefore(wrapper, h1);
-        wrapper.appendChild(h1);
+        wrapper.style.cssText = 'display: flex; align-items: center; flex-wrap: nowrap; gap: 15px; margin-bottom: 15px; width: 100%;';
+
+        // Insert wrapper BEFORE the anchor (or h1), not inside it
+        titleElement.parentNode.insertBefore(wrapper, titleElement);
+
+        // Move the title (anchor or h1) into wrapper first
+        wrapper.appendChild(titleElement);
+
         headerRow = wrapper;
     }
 
@@ -27,10 +40,10 @@
     const draftCount = posts.filter(p => p.querySelector('small')?.textContent.includes('not published')).length;
     const publishedCount = posts.length - draftCount;
 
-    // Build filter nav
+    // Build filter nav - allow shrinking but don't grow
     const nav = document.createElement('div');
     nav.className = 'filter-nav';
-    nav.style.cssText = 'font-size: 0.75em; text-transform: uppercase; display: flex; gap: 12px; flex-wrap: wrap;';
+    nav.style.cssText = 'font-size: 0.75em; text-transform: uppercase; display: flex; gap: 12px; flex-wrap: nowrap; flex: 0 1 auto;';
 
     const makeLink = (text, filter, bold = false) => {
         const a = document.createElement('a');
@@ -46,12 +59,12 @@
     nav.appendChild(makeLink(`Published (${publishedCount})`, 'published'));
     nav.appendChild(makeLink(`Drafts (${draftCount})`, 'drafts'));
 
-    // Create search input - RIGHT JUSTIFIED via margin-left: auto
+    // Create search input - fixed size, margin-left:auto pushes it to right edge
     const search = document.createElement('input');
     search.type = 'text';
     search.id = 'searchInput';
     search.placeholder = 'Search...';
-    search.style.cssText = 'margin-left: auto; width: 200px; max-width: 200px; padding: 4px 8px; font-size: 0.85em; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;';
+    search.style.cssText = 'flex: 0 0 200px; margin-left: auto; padding: 4px 8px; font-size: 0.85em; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;';
 
     // Search handler
     search.addEventListener('input', (e) => {
@@ -62,20 +75,9 @@
         });
     });
 
-    // Insert into header row (filters middle, search right)
-    if (headerRow) {
-        headerRow.appendChild(nav);
-        headerRow.appendChild(search);
-    } else {
-        // Fallback if no h1: stack above list
-        const container = document.createElement('div');
-        container.style.cssText = 'margin-bottom: 15px;';
-        container.appendChild(nav);
-        container.appendChild(search);
-        search.style.marginLeft = '0';
-        search.style.marginTop = '10px';
-        postList.parentNode.insertBefore(container, postList);
-    }
+    // Append to the flex row: [Logo Link] [Filters] [Search]
+    headerRow.appendChild(nav);
+    headerRow.appendChild(search);
 
     // Filter click handler
     nav.addEventListener('click', (e) => {
