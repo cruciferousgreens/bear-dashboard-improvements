@@ -90,7 +90,33 @@
             }, 100);
 
             // Add click event listeners
-            allLink.addEventListener('click', function(e) {
+
+            navContainer.addEventListener('click', function(e) {
+                // Check if the clicked element is a filter link
+                if (e.target.classList.contains('filterSwitcher')) {
+                    e.preventDefault();
+
+                    // Get the name from the clicked link
+                    const name = e.target.textContent;
+
+                    // Call filterPosts with appropriate parameter
+                    if (name.includes('PUBLISHED')) {
+                        filterPosts('published');
+                    } else if (name.includes('DRAFTS')) {
+                        filterPosts('draft');
+                    } else {
+                        filterPosts('all');
+                    }
+
+                    // Update link styles
+                    document.querySelectorAll('.filterSwitcher').forEach(link => {
+                        link.style.fontWeight = 'normal';
+                    });
+                    e.target.style.fontWeight = 'bold';
+                }
+            });
+
+            /*allLink.addEventListener('click', function(e) {
                 e.preventDefault();
                 filterPosts('all');
                 // Update link styles
@@ -115,7 +141,7 @@
                 allLink.style.fontWeight = 'normal';
                 publishedLink.style.fontWeight = 'normal';
                 draftsLink.style.fontWeight = 'bold';
-            });
+            });*/
 
             // Function to filter posts by status
             function filterPosts(status) {
