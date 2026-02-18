@@ -1,7 +1,19 @@
 document.addEventListener('DOMContentLoaded', function() {
     const postList = document.querySelector('ul.post-list');
-    const main = document.querySelector('main');
-    if (!postList || !main) return;
+    const h1 = document.querySelector('h1');
+    if (!postList) return;
+
+    // Find or create header container for inline layout
+    let headerRow = h1?.parentElement;
+    if (h1 && !headerRow.classList.contains('page-header-row')) {
+        // Wrap h1 in a flex container if not already
+        const wrapper = document.createElement('div');
+        wrapper.className = 'page-header-row';
+        wrapper.style.cssText = 'display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 20px; margin-bottom: 20px;';
+        h1.parentNode.insertBefore(wrapper, h1);
+        wrapper.appendChild(h1);
+        headerRow = wrapper;
+    }
 
     const starredTitles = ['Contact', 'Now', 'Gratitude'];
     const posts = Array.from(postList.querySelectorAll('li'));
@@ -10,17 +22,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const draftCount = posts.filter(p => p.querySelector('small')?.textContent.includes('not published')).length;
     const publishedCount = posts.length - draftCount;
 
-    // Build filter nav
+    // Build filter nav (inline style)
     const nav = document.createElement('div');
     nav.className = 'filter-nav';
-    nav.style.cssText = 'margin: 0 0 20px 0; font-size: 0.8em; text-transform: uppercase;';
+    nav.style.cssText = 'font-size: 0.8em; text-transform: uppercase; display: flex; gap: 15px; flex-wrap: wrap;';
 
     const makeLink = (text, filter, bold = false) => {
         const a = document.createElement('a');
         a.href = '#';
         a.textContent = text;
         a.dataset.filter = filter;
-        a.style.cssText = `margin-right: 15px; color: #777; text-decoration: none; cursor: pointer;${bold ? ' font-weight: bold;' : ''}`;
+        a.style.cssText = `color: #777; text-decoration: none; cursor: pointer;${bold ? ' font-weight: bold; color: #333;' : ''}`;
         return a;
     };
 
@@ -31,8 +43,13 @@ document.addEventListener('DOMContentLoaded', function() {
     nav.appendChild(makeLink(`Published (${publishedCount})`, 'published'));
     nav.appendChild(makeLink(`Drafts (${draftCount})`, 'drafts'));
 
-    // Insert before list
-    main.insertBefore(nav, postList);
+    // Insert into header row (or before post list if no h1)
+    if (headerRow) {
+        headerRow.appendChild(nav);
+    } else {
+        postList.parentNode.insertBefore(nav, postList);
+        nav.style.marginBottom = '20px';
+    }
 
     // Filter handler
     nav.addEventListener('click', (e) => {
@@ -40,8 +57,12 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
 
         // Update active state
-        nav.querySelectorAll('a').forEach(a => a.style.fontWeight = 'normal');
+        nav.querySelectorAll('a').forEach(a => {
+            a.style.fontWeight = 'normal';
+            a.style.color = '#777';
+        });
         e.target.style.fontWeight = 'bold';
+        e.target.style.color = '#333';
 
         const filter = e.target.dataset.filter;
 
