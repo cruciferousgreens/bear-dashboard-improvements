@@ -26,37 +26,6 @@
             navContainer.style.width = '100%'; // Fixed width to prevent layout shifts
 
             // Create the navigation links
-            const allLink = document.createElement('a');
-            allLink.href = '#';
-            allLink.textContent = 'ALL';
-            allLink.className = 'filterSwitcher';
-            allLink.style.cursor = 'pointer';
-            allLink.style.marginRight = '15px';
-            allLink.style.textTransform = 'uppercase';
-            allLink.style.fontSize = '0.8em';
-            allLink.style.color = '#777';
-            allLink.style.fontWeight = 'bold'; // Default active state
-
-            const publishedLink = document.createElement('a');
-            publishedLink.href = '#';
-            publishedLink.textContent = `PUBLISHED (${publishedCount})`;
-            publishedLink.className = 'filterSwitcher';
-            publishedLink.style.cursor = 'pointer';
-            publishedLink.style.marginRight = '15px';
-            publishedLink.style.textTransform = 'uppercase';
-            publishedLink.style.fontSize = '0.8em';
-            publishedLink.style.color = '#777';
-            publishedLink.style.fontWeight = 'normal';
-
-            const draftsLink = document.createElement('a');
-            draftsLink.href = '#';
-            draftsLink.textContent = `DRAFTS (${draftCount})`;
-            draftsLink.className = 'filterSwitcher';
-            draftsLink.style.cursor = 'pointer';
-            draftsLink.style.textTransform = 'uppercase';
-            draftsLink.style.fontSize = '0.8em';
-            draftsLink.style.color = '#777';
-            draftsLink.style.fontWeight = 'normal';
 
             function filterLink(name){
                 const displayLink = document.createElement('a');
@@ -70,16 +39,20 @@
                 displayLink.className = 'filterSwitcher'; // So we can style with CSS seperately
                 displayLink.href = '#';
                 displayLink.title = name;
+                // styles for now (pull out later)
+                    displayLink.style.cursor = 'pointer';
+                    displayLink.style.marginRight = '15px';
+                    displayLink.style.textTransform = 'uppercase';
+                    displayLink.style.fontSize = '0.8em';
+                    displayLink.style.color = '#777';
+                    displayLink.style.fontWeight = 'normal';
+                //end styles
                 navContainer.appendChild(displayLink);
             }
+
             filterLink('PUBLISHED');
             filterLink('DRAFTS');
             filterLink('ALL');
-
-            // Add links to container
-           // navContainer.appendChild(allLink);
-           // navContainer.appendChild(publishedLink);
-            // navContainer.appendChild(draftsLink);
 
             // Insert after search input (wait for search to be created)
             setTimeout(() => {
