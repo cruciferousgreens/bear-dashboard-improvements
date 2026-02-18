@@ -28,6 +28,7 @@
             const allLink = document.createElement('a');
             allLink.href = '#';
             allLink.textContent = 'ALL';
+            allLink.className = 'filterSwitcher';
             allLink.style.cursor = 'pointer';
             allLink.style.marginRight = '15px';
             allLink.style.textTransform = 'uppercase';
@@ -38,6 +39,7 @@
             const publishedLink = document.createElement('a');
             publishedLink.href = '#';
             publishedLink.textContent = `PUBLISHED (${publishedCount})`;
+            publishedLink.className = 'filterSwitcher';
             publishedLink.style.cursor = 'pointer';
             publishedLink.style.marginRight = '15px';
             publishedLink.style.textTransform = 'uppercase';
@@ -48,6 +50,7 @@
             const draftsLink = document.createElement('a');
             draftsLink.href = '#';
             draftsLink.textContent = `DRAFTS (${draftCount})`;
+            draftsLink.className = 'filterSwitcher';
             draftsLink.style.cursor = 'pointer';
             draftsLink.style.textTransform = 'uppercase';
             draftsLink.style.fontSize = '0.8em';
