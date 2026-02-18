@@ -57,10 +57,27 @@
             draftsLink.style.color = '#777';
             draftsLink.style.fontWeight = 'normal';
 
+            function filterLink(name){
+                const displayLink = document.createElement('a');
+                if (name === "PUBLISHED"){
+                    displayLink.textContent = `PUBLISHED (${publishedCount})`;
+                }
+                if (name === "DRAFTS"){
+                    displayLink.textContent = `DRAFTS (${draftCount})`;
+                }
+                displayLink.textContent = name;
+                displayLink.className = 'filterSwitcher';
+                displayLink.href = 'filterSwitcher';
+                displayLink.title = name;
+            }
+            filterLink('PUBLISHED');
+            filterLink('DRAFTS');
+            filterLink('ALL');
+
             // Add links to container
-            navContainer.appendChild(allLink);
-            navContainer.appendChild(publishedLink);
-            navContainer.appendChild(draftsLink);
+           // navContainer.appendChild(allLink);
+           // navContainer.appendChild(publishedLink);
+            // navContainer.appendChild(draftsLink);
 
             // Insert after search input (wait for search to be created)
             setTimeout(() => {
