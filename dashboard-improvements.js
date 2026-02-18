@@ -52,8 +52,7 @@
 
   
             const starredTitles = ['Contact','Now','Gratitude']; // Starred pages array!
-            const isPage = document.querySelector('h1');
-            if(isPage.textContent==='Pages'){
+            if (window.location.pathname.endsWith('/pages/')) {
                 filterLink('STARRED');
             }
             filterLink('ALL');
