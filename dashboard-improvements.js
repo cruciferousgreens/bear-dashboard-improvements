@@ -1,135 +1,3 @@
-
-
-// Categorize posts page by month
-(function() {
-    'use strict';
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const postList = document.querySelector('ul.post-list');
-        if (postList) {
-            const allPosts = postList.querySelectorAll('li');
-            const totalCount = allPosts.length;
-
-            // Count drafts (posts with "not published" text)
-            let draftCount = 0;
-            allPosts.forEach(post => {
-                const smallElement = post.querySelector('small');
-                if (smallElement && smallElement.textContent.includes('not published')) {
-                    draftCount++;
-                }
-            });
-
-            const publishedCount = totalCount - draftCount;
-
-            // Create navigation container with fixed width
-            const navContainer = document.createElement('div');
-            navContainer.className = 'navContainer';
-            navContainer.style.margin = '10px 0';
-            navContainer.style.width = '100%'; // Fixed width to prevent layout shifts
-
-            // Create the navigation links
-
-            function filterLink(name){
-                const displayLink = document.createElement('a');
-                if (name === "PUBLISHED") {
-                    displayLink.textContent = `PUBLISHED (${publishedCount})`;
-                } else if (name === "DRAFTS") {
-                    displayLink.textContent = `DRAFTS (${draftCount})`;
-                } else {
-                    displayLink.textContent = name;
-                }
-                displayLink.className = 'filterSwitcher'; // So we can style with CSS seperately
-                displayLink.href = '#';
-                displayLink.title = name;
-  // styles for now (pull out later)
-                displayLink.style.cursor = 'pointer';
-                displayLink.style.marginRight = '15px';
-                displayLink.style.textTransform = 'uppercase';
-                displayLink.style.fontSize = '0.8em';
-                displayLink.style.color = '#777';
-                //end styles
-                if (name === 'ALL'){displayLink.style.fontWeight = 'bold';}
-                else{displayLink.style.fontWeight = 'normal';}
-                //end styles
-                navContainer.appendChild(displayLink);
-            }
-
-  
-            const starredTitles = ['Contact','Now','Gratitude']; // Starred pages array!
-            if (window.location.pathname.endsWith('/pages/')) {
-                filterLink('STARRED');
-            }
-            filterLink('ALL');
-            filterLink('PUBLISHED');
-            filterLink('DRAFTS');
-
-            // Insert after search input (wait for search to be created)
-            setTimeout(() => {
-                const searchInput = document.getElementById('searchInput');
-                if (searchInput) {
-                    searchInput.parentNode.insertBefore(navContainer, searchInput.nextSibling);
-                }
-            }, 100);
-
-            // Add click event listeners
-
-            navContainer.addEventListener('click', function(e) {
-                // Check if the clicked element is a filter link
-                if (e.target.classList.contains('filterSwitcher')) {
-                    e.preventDefault();
-
-                    // Get the name from the clicked link
-                    const name = e.target.textContent;
-
-                    // Call filterPosts with appropriate parameter
-                    if (name.includes('PUBLISHED')) {
-                        filterPosts('published');
-                    } else if (name.includes('DRAFTS')) {
-                        filterPosts('draft');
-                    } else if (name.includes('STARRED')) {
-                        filterPosts('starred');
-                    } 
-                    else {
-                        filterPosts('all');
-                    }
-
-                    // Update link styles
-                    document.querySelectorAll('.filterSwitcher').forEach(link => {
-                        link.style.fontWeight = 'normal';
-                    });
-                    e.target.style.fontWeight = 'bold';
-                }
-            });
-
-            // Function to filter posts by status
-function filterPosts(status) {
-    allPosts.forEach(post => {
-        const smallElement = post.querySelector('small');
-        const isDraft = smallElement && smallElement.textContent.includes('not published');
-
-        // Get the link text inside the <li> element
-        const linkText = post.querySelector('li a')?.textContent.trim();
-
-        // Check if this post's link text is in the starredTitles array
-        const isPostStarred = linkText && starredTitles.includes(linkText);
-
-        if (status === 'all') {
-            post.style.display = '';
-        } else if (status === 'published' && !isDraft) {
-            post.style.display = '';
-        } else if (status === 'draft' && isDraft) {
-            post.style.display = '';
-        } else if (status === 'starred' && isPostStarred) {
-            post.style.display = '';
-        } else {
-            post.style.display = 'none';
-        }
-    });
-}
-        }
-    });
-})();
-
 // Function to format the month and year for headers
 function formatMonthYear(date) {
     return date.toLocaleString('default', { month: 'long', year: 'numeric' });
@@ -140,10 +8,7 @@ function organizeBlogPosts() {
     const blogPostsList = document.querySelector('.post-list');
     if (!blogPostsList) return;
 
-    // Get all list items
     const posts = Array.from(blogPostsList.querySelectorAll('li'));
-
-    // Group posts by month
     const postsByMonth = new Map();
 
     posts.forEach(post => {
@@ -159,25 +24,20 @@ function organizeBlogPosts() {
         postsByMonth.get(monthYear).push(post);
     });
 
-    // Clear the list
     blogPostsList.innerHTML = '';
 
-    // Sort months in descending order (newest first)
     const sortedMonths = Array.from(postsByMonth.keys()).sort((a, b) => {
         const dateA = new Date(a);
         const dateB = new Date(b);
         return dateB - dateA;
     });
 
-    // Add posts back with headers
     sortedMonths.forEach(monthYear => {
-        // Create and add month header
         const header = document.createElement('h2');
         header.textContent = monthYear;
         header.className = 'month-header';
         blogPostsList.appendChild(header);
 
-        // Add posts for this month
         postsByMonth.get(monthYear).forEach(post => {
             blogPostsList.appendChild(post);
         });
@@ -187,27 +47,27 @@ function organizeBlogPosts() {
 // Add search to posts page
 function addSearch() {
     const blogPosts = document.querySelector('.post-list');
-    if (blogPosts) {  // Check if the post list exists
-        const mainContainer = document.querySelector('main');
-        const searchInput = document.createElement('input');
-        searchInput.type = 'text';
-        searchInput.id = 'searchInput';
-        searchInput.placeholder = 'Search...';
-        searchInput.style.display = 'block';
+    if (!blogPosts) return;
 
-        // Insert the search input before the blog posts
-        mainContainer.insertBefore(searchInput, blogPosts);
+    const mainContainer = document.querySelector('main');
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.id = 'searchInput';
+    searchInput.placeholder = 'Search...';
+    searchInput.style.display = 'block';
+    searchInput.style.width = '100%';
+    searchInput.style.boxSizing = 'border-box';
 
-        // Add event listener to filter posts based on input
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            const posts = document.querySelectorAll('.post-list li');
-            posts.forEach(post => {
-                const title = post.textContent.toLowerCase();
-                post.style.display = title.includes(searchTerm) ? '' : 'none';
-            });
+    mainContainer.insertBefore(searchInput, blogPosts);
+
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const posts = document.querySelectorAll('.post-list li');
+        posts.forEach(post => {
+            const title = post.textContent.toLowerCase();
+            post.style.display = title.includes(searchTerm) ? '' : 'none';
         });
-    }
+    });
 }
 
 // Initialize pagination after all DOM manipulations
@@ -217,7 +77,8 @@ function initPagination() {
     const totalPages = Math.ceil(posts.length / postsPerPage);
     let currentPage = 1;
 
-    // Create pagination controls
+    if (totalPages <= 1) return;
+
     const paginationDiv = document.createElement('div');
     paginationDiv.innerHTML = '<div class="pagination"><a id="prevPage">Previous</a><span id="pageInfo"></span><a id="nextPage">Next</a></div>';
     document.querySelector('.post-list').after(paginationDiv);
@@ -231,18 +92,18 @@ function initPagination() {
         });
 
         document.getElementById('pageInfo').textContent = `Page ${page} of ${totalPages}`;
-        document.getElementById('prevPage').disabled = page === 1;
-        document.getElementById('nextPage').disabled = page === totalPages;
+        document.getElementById('prevPage').style.opacity = page === 1 ? '0.5' : '1';
+        document.getElementById('nextPage').style.opacity = page === totalPages ? '0.5' : '1';
     }
 
     document.getElementById('prevPage').onclick = (e) => {
         e.preventDefault();
-        if(currentPage > 1) showPage(--currentPage);
+        if (currentPage > 1) showPage(--currentPage);
     };
 
     document.getElementById('nextPage').onclick = (e) => {
         e.preventDefault();
-        if(currentPage < totalPages) showPage(++currentPage);
+        if (currentPage < totalPages) showPage(++currentPage);
     };
 
     showPage(1);
@@ -250,18 +111,111 @@ function initPagination() {
 
 // Run all post-processing in correct order after DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // First: Add search functionality
+    const postList = document.querySelector('ul.post-list');
+    const starredTitles = ['Contact', 'Now', 'Gratitude'];
+    let allPosts = [];
+    let draftCount = 0;
+    let publishedCount = 0;
+
+    // Pre-count posts BEFORE any DOM manipulation (while list is intact)
+    if (postList) {
+        allPosts = Array.from(postList.querySelectorAll('li'));
+        const totalCount = allPosts.length;
+
+        allPosts.forEach(post => {
+            const smallElement = post.querySelector('small');
+            if (smallElement && smallElement.textContent.includes('not published')) {
+                draftCount++;
+            }
+        });
+        publishedCount = totalCount - draftCount;
+    }
+
+    // Add search and filters synchronously (no layout shift between them)
     addSearch();
 
-    // Second: Organize posts by month
-    organizeBlogPosts();
+    // Create and insert filter nav immediately (no 100ms timeout)
+    if (postList) {
+        const navContainer = document.createElement('div');
+        navContainer.className = 'navContainer';
+        navContainer.style.margin = '10px 0';
+        navContainer.style.width = '100%';
 
-    // Third: Initialize pagination (after all DOM manipulations)
+        function filterLink(name) {
+            const displayLink = document.createElement('a');
+            if (name === "PUBLISHED") {
+                displayLink.textContent = `PUBLISHED (${publishedCount})`;
+            } else if (name === "DRAFTS") {
+                displayLink.textContent = `DRAFTS (${draftCount})`;
+            } else {
+                displayLink.textContent = name;
+            }
+            displayLink.className = 'filterSwitcher';
+            displayLink.href = '#';
+            displayLink.title = name;
+            displayLink.style.cursor = 'pointer';
+            displayLink.style.marginRight = '15px';
+            displayLink.style.textTransform = 'uppercase';
+            displayLink.style.fontSize = '0.8em';
+            displayLink.style.color = '#777';
+
+            if (name === 'ALL') {
+                displayLink.style.fontWeight = 'bold';
+            }
+
+            navContainer.appendChild(displayLink);
+        }
+
+        if (window.location.pathname.endsWith('/pages/')) {
+            filterLink('STARRED');
+        }
+        filterLink('ALL');
+        filterLink('PUBLISHED');
+        filterLink('DRAFTS');
+
+        // Insert immediately after search (no setTimeout)
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.parentNode.insertBefore(navContainer, searchInput.nextSibling);
+        }
+
+        // Filter click handler
+        navContainer.addEventListener('click', function(e) {
+            if (!e.target.classList.contains('filterSwitcher')) return;
+
+            e.preventDefault();
+            const name = e.target.textContent;
+
+            allPosts.forEach(post => {
+                const smallElement = post.querySelector('small');
+                const isDraft = smallElement && smallElement.textContent.includes('not published');
+                const linkText = post.querySelector('a')?.textContent.trim();
+                const isPostStarred = linkText && starredTitles.includes(linkText);
+
+                if (name.includes('PUBLISHED')) {
+                    post.style.display = isDraft ? 'none' : '';
+                } else if (name.includes('DRAFTS')) {
+                    post.style.display = isDraft ? '' : 'none';
+                } else if (name.includes('STARRED')) {
+                    post.style.display = isPostStarred ? '' : 'none';
+                } else {
+                    post.style.display = '';
+                }
+            });
+
+            document.querySelectorAll('.filterSwitcher').forEach(link => {
+                link.style.fontWeight = 'normal';
+            });
+            e.target.style.fontWeight = 'bold';
+        });
+    }
+
+    // Then organize by month and paginate
+    organizeBlogPosts();
     initPagination();
 });
 
 <!-- markdown hotkeys -->
-
 (() => {
   const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform);
 
@@ -362,34 +316,37 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 
 <!-- Autosave my blog drafts -->
+(() => {
     const restore_btn = document.createElement('button');
     restore_btn.classList.add('rdb_post_restorer');
     restore_btn.setAttribute('onclick', "event.preventDefault();rdb_restore_post();");
     restore_btn.innerText = 'Restore Last Post';
-    document.querySelector('.sticky-controls').appendChild(restore_btn);
+    document.querySelector('.sticky-controls')?.appendChild(restore_btn);
 
     function rdb_restore_post(){
         var ebody = document.getElementById('body_content');
         var eheaders = document.getElementById('header_content');
 
-        if (ebody.value.length > 30){
-            if (!confirm("Overwrite your current post with previous post?"))return;
+        if (ebody && ebody.value.length > 30){
+            if (!confirm("Overwrite your current post with previous post?")) return;
         }
 
-        ebody.value= localStorage.getItem('body');
-        eheaders.innerText = localStorage.getItem('headers');
+        if (ebody) ebody.value = localStorage.getItem('body');
+        if (eheaders) eheaders.innerText = localStorage.getItem('headers');
     }
+
     function rdb_save_post(){
         setTimeout(function(){rdb_save_post();}, 10000);
-        console.log(localStorage);
-        var body = document.getElementById('body_content').value;
-        var headers = document.getElementById('header_content').innerText;
-        if (body.length < 50){
+        var body = document.getElementById('body_content')?.value;
+        var headers = document.getElementById('header_content')?.innerText;
+        if (!body || body.length < 50){
             console.log("Body less than 50 chars. Not saving.");
             return;
         }
         localStorage.setItem('body', body);
         localStorage.setItem('headers', headers);
-        console.log("Post saved locally",localStorage);
+        console.log("Post saved locally");
     }
+
     setTimeout(function(){rdb_save_post();}, 10000);
+})();
