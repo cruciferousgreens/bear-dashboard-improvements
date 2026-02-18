@@ -1,3 +1,5 @@
+
+
 // Categorize posts page by month
 (function() {
     'use strict';
@@ -26,6 +28,7 @@
             navContainer.style.width = '100%'; // Fixed width to prevent layout shifts
 
             // Create the navigation links
+
             function filterLink(name){
                 const displayLink = document.createElement('a');
                 if (name === "PUBLISHED") {
@@ -51,7 +54,7 @@
                 navContainer.appendChild(displayLink);
             }
 
-
+  
             const starredTitles = ['Contact','Now','Gratitude']; // Starred pages array!
             if (window.location.pathname.endsWith('/pages/')) {
                 filterLink('STARRED');
@@ -61,14 +64,15 @@
             filterLink('DRAFTS');
 
             // Insert after search input (wait for search to be created)
- // NEW: Find the toolbar and add filters immediately
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                const toolbar = searchInput.parentNode;
-                toolbar.appendChild(navContainer);
-            }
+            setTimeout(() => {
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.parentNode.insertBefore(navContainer, searchInput.nextSibling);
+                }
+            }, 100);
 
             // Add click event listeners
+
             navContainer.addEventListener('click', function(e) {
                 // Check if the clicked element is a filter link
                 if (e.target.classList.contains('filterSwitcher')) {
@@ -185,27 +189,14 @@ function addSearch() {
     const blogPosts = document.querySelector('.post-list');
     if (blogPosts) {  // Check if the post list exists
         const mainContainer = document.querySelector('main');
-
-        // NEW: Create a fixed-height toolbar to prevent layout shift
-        const toolbar = document.createElement('div');
-        toolbar.style.height = '100px';
-        toolbar.style.width = '100%';
-        toolbar.style.marginBottom = '20px';
-
-        // Create the search input
         const searchInput = document.createElement('input');
         searchInput.type = 'text';
         searchInput.id = 'searchInput';
         searchInput.placeholder = 'Search...';
         searchInput.style.display = 'block';
-        searchInput.style.width = '100%';
-        searchInput.style.marginBottom = '10px';
 
-        // Append search to toolbar
-        toolbar.appendChild(searchInput);
-
-        // Insert the entire toolbar before the blog posts
-        mainContainer.insertBefore(toolbar, blogPosts);
+        // Insert the search input before the blog posts
+        mainContainer.insertBefore(searchInput, blogPosts);
 
         // Add event listener to filter posts based on input
         searchInput.addEventListener('input', function() {
