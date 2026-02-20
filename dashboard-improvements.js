@@ -50,7 +50,7 @@
         a.href = '#';
         a.textContent = text;
         a.dataset.filter = filter;
-        a.style.cssText = `color: #777; text-decoration: none; cursor: pointer; white-space: nowrap;${bold ? ' font-weight: bold; color: #333;' : ''}`;
+        a.style.cssText = `color: var(--text-color); text-decoration: none; cursor: pointer; white-space: nowrap;${bold ? ' font-weight: bold; color: var(--text-color);' : ''}`;
         return a;
     };
 
@@ -86,10 +86,10 @@
 
         nav.querySelectorAll('a').forEach(a => {
             a.style.fontWeight = 'normal';
-            a.style.color = '#777';
+            a.style.color = 'var(--text-color)';
         });
         e.target.style.fontWeight = 'bold';
-        e.target.style.color = '#333';
+        e.target.style.color = 'var(--text-color)';
 
         const filter = e.target.dataset.filter;
 
