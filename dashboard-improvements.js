@@ -43,8 +43,7 @@
     // Build filter nav - allow shrinking but don't grow
     const nav = document.createElement('div');
     nav.className = 'filter-nav';
-    nav.style.cssText = 'font-size: 0.75em; text-transform: uppercase; display: flex; gap: 12px; flex-wrap: nowrap; flex: 0 1 auto;';
-
+    
     const makeLink = (text, filter, bold = false) => {
         const a = document.createElement('a');
         a.href = '#';
@@ -160,60 +159,6 @@
         show(1);
     }
 
-    // Markdown hotkeys
-    (() => {
-        const isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform);
-        const getTA = () => document.querySelector('textarea#body_content') || document.querySelector('textarea');
-
-        const wrap = (el, w) => {
-            const [v, s, e] = [el.value, el.selectionStart, el.selectionEnd];
-            const sel = v.slice(s, e);
-            if (!sel) {
-                const ph = w === '`' ? 'code' : 'text';
-                el.value = v.slice(0, s) + w + ph + w + v.slice(e);
-                el.setSelectionRange(s + w.length, s + w.length + ph.length);
-                return;
-            }
-            if (sel.startsWith(w) && sel.endsWith(w)) {
-                el.value = v.slice(0, s) + sel.slice(w.length, -w.length) + v.slice(e);
-                el.setSelectionRange(s, e - w.length * 2);
-                return;
-            }
-            el.value = v.slice(0, s) + w + sel + w + v.slice(e);
-            el.setSelectionRange(s + w.length, e + w.length);
-        };
-
-        const unwrapAny = (el) => {
-            const ws = ['**', '*', '`'];
-            let [s, e] = [el.selectionStart, el.selectionEnd];
-            if (s === e) {
-                let [L, R] = [s, s];
-                while (L > 0 && !/\s/.test(el.value[L-1])) L--;
-                while (R < el.value.length && !/\s/.test(el.value[R])) R++;
-                if (L === R) return;
-                [s, e] = [L, R];
-            }
-            for (const w of ws) {
-                if (el.value.slice(s, s+w.length) === w && el.value.slice(e-w.length, e) === w) {
-                    el.value = el.value.slice(0, s) + el.value.slice(s+w.length, e-w.length) + el.value.slice(e);
-                    el.setSelectionRange(s, e - w.length*2);
-                    return;
-                }
-            }
-        };
-
-        document.addEventListener('keydown', (ev) => {
-            const ta = getTA();
-            if (document.activeElement !== ta) return;
-            const mod = isMac ? ev.metaKey : ev.ctrlKey;
-            if (!mod) return;
-            const k = ev.key.toLowerCase();
-            if (k === 'b') { ev.preventDefault(); wrap(ta, '**'); }
-            else if (k === 'i') { ev.preventDefault(); wrap(ta, '*'); }
-            else if (k === 'k') { ev.preventDefault(); wrap(ta, '`'); }
-            else if (k === 'u') { ev.preventDefault(); unwrapAny(ta); }
-        });
-    })();
 
     // Autosave drafts
     (() => {
