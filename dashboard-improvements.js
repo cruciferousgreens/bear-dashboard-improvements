@@ -30,7 +30,7 @@
         headerRow = wrapper;
     }
 
-    // const isPostsPage = window.location.pathname.endsWith('/posts/');
+    const isPostsPage = window.location.pathname.endsWith('/posts/');
     // const isPagesPage = window.location.pathname.endsWith('/pages/');
 
     const posts = Array.from(postList.querySelectorAll('li'));
