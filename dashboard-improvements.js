@@ -33,7 +33,6 @@
     const isPostsPage = window.location.pathname.endsWith('/posts/');
     const isPagesPage = window.location.pathname.endsWith('/pages/');
 
-    const starredTitles = ['Contact', 'Now', 'Gratitude'];
     const posts = Array.from(postList.querySelectorAll('li'));
 
     // Count drafts/published
