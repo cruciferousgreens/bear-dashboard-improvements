@@ -52,7 +52,6 @@
         return a;
     };
 
-    // if (isPagesPage) nav.appendChild(makeLink('Starred', 'starred'));
     nav.appendChild(makeLink(`All (${posts.length})`, 'all', true));
     nav.appendChild(makeLink(`Published (${publishedCount})`, 'published'));
     nav.appendChild(makeLink(`Drafts (${draftCount})`, 'drafts'));
@@ -93,12 +92,10 @@
         posts.forEach(post => {
             const isDraft = post.querySelector('small')?.textContent.includes('not published');
             const title = post.querySelector('a')?.textContent.trim();
-            // const isStarred = starredTitles.includes(title);
 
             const show = 
                 filter === 'drafts' ? isDraft :
                 filter === 'published' ? !isDraft :
-                // filter === 'starred' ? isStarred :
                 true;
 
             post.style.display = show ? '' : 'none';
