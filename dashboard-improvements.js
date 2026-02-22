@@ -1,19 +1,8 @@
-// Top-level guard clause
-if (window.location.pathname.includes('/analytics')) {
-    console.log('Analytics page detected - script disabled');
-    // Ensure analytics chart can initialize
-    if (typeof Chart !== 'undefined') {
-        // Your analytics chart initialization here
-    }
-    // Exit - nothing below will execute
-    return;
-}
-
 (function() {
     // Skip entirely on mobile (phones/tablets)
     if (window.innerWidth <= 768) return;
-    if (window.location.pathname.endsWith('/analytics/')) return; // Do not run on /analytics page
-
+    if (window.location.pathname.includes('/analytics')) return; // Do not run on /analytics page
+    
     const postList = document.querySelector('ul.post-list');
     const h1 = document.querySelector('h1');
     if (!postList) return;
