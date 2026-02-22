@@ -1,7 +1,7 @@
 (function() {
     // Skip entirely on mobile (phones/tablets)
     if (window.innerWidth <= 768) return;
-    if (window.location.pathname.endsWith == '/analytics/') return; // Do not run on /analytics page
+    if (window.location.pathname.endsWith('/analytics/')) return; // Do not run on /analytics page
 
     const postList = document.querySelector('ul.post-list');
     const h1 = document.querySelector('h1');
