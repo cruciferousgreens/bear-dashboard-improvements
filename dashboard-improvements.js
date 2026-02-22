@@ -1,3 +1,14 @@
+// Top-level guard clause
+if (window.location.pathname.includes('/analytics')) {
+    console.log('Analytics page detected - script disabled');
+    // Ensure analytics chart can initialize
+    if (typeof Chart !== 'undefined') {
+        // Your analytics chart initialization here
+    }
+    // Exit - nothing below will execute
+    return;
+}
+
 (function() {
     // Skip entirely on mobile (phones/tablets)
     if (window.innerWidth <= 768) return;
