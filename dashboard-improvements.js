@@ -63,7 +63,6 @@
     search.type = 'text';
     search.id = 'searchInput';
     search.placeholder = 'Search...';
-    search.style.cssText = 'flex: 0 0 200px; margin-left: auto; padding: 4px 8px; font-size: 0.85em; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;';
 
     // Search handler
     search.addEventListener('input', (e) => {
