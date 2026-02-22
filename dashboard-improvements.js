@@ -1,6 +1,7 @@
 (function() {
     // Skip entirely on mobile (phones/tablets)
     if (window.innerWidth <= 768) return;
+    if (window.location.pathname.includes('/analytics')) return; // Do not run on /analytics page
     
     const postList = document.querySelector('ul.post-list');
     const h1 = document.querySelector('h1');
@@ -110,7 +111,6 @@
     initPagination();
 
     function organizeByMonth(posts, list) {
-        if (window.location.pathname.includes('/analytics')) return; // Do not run on /analytics page
         const byMonth = new Map();
 
         posts.forEach(post => {
